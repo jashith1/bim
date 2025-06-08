@@ -1,3 +1,4 @@
+#TO-DO: Add support for negative numbers
 from enum import Enum
 
 #Token types recognized by bim
@@ -68,27 +69,58 @@ class Lexer:
         # when out of characters return EOF to signify end
         return Token(TokenType.EOF, "")
 
+class Parser:
+    def __init__(self, lexer):
+        self.lexer = lexer
+        self.current_token = self.lexer.get_next_token()
+    
+    def eat(self, token_type):
+        """Move forward if everything is correct"""
+        if self.current_token.type == token_type:
+            self.current_token = self.lexer.get_next_token()
+        else:
+            raise Exception(f"Expected {token_type}, got {self.current_token.type}")
+    
+    def factor(self):
+        """Parse a number and move forward"""
+        token = self.current_token
+        self.eat(TokenType.NUMBER)
+        return float(token.value)
+    
+    def expression(self):
+        """Parse the expression (like: number + number, etc)"""
+        result = self.factor()
+        
+        # Keep processing + and - operations
+        while self.current_token.type in (TokenType.PLUS, TokenType.MINUS):
+            token = self.current_token
+            print(token, result)
+            if token.type == TokenType.PLUS:
+                #move forward to number
+                self.eat(TokenType.PLUS)
+                #get number and move forward to next symbol
+                result = result + self.factor()
+            elif token.type == TokenType.MINUS:
+                self.eat(TokenType.MINUS)
+                result = result - self.factor()
+        
+        return result
+
+
 
 if __name__ == "__main__":
     #bim code is just hard coded for now
     test_expressions = [
+        "3",
         "3 + 5",
-        "10 - 2.5",
-        "123 + 456 - 789"
+        "10 - 2",
+        "1 + 2 + 3",
+        "10 - 3 + 5 - 1",
     ]
     
     for expr in test_expressions:
-        print(f"\nTokenizing: '{expr}'")
+        print(f"\nParsing: '{expr}'")
         lexer = Lexer(expr)
-        
-        # Get all tokens until we hit EOF
-        tokens = []
-        while True:
-            token = lexer.get_next_token()
-            tokens.append(token)
-            if token.type == TokenType.EOF:
-                break
-        
-        # Print the tokens
-        for token in tokens:
-            print(f"  {token}")
+        parser = Parser(lexer)
+        result = parser.expression()
+        print(f"Result: {result}")
