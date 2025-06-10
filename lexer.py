@@ -1,5 +1,4 @@
-from token_type import TokenType
-from bim_token import Token
+from bim_token import TokenType, Token
 
 # Break input code into tokens
 class Lexer:

@@ -1,4 +1,5 @@
-from token_type import TokenType
+from bim_token import TokenType
+from ast_nodes import BinaryOpNode, NumberNode
 
 class Parser:
     def __init__(self, lexer):
@@ -16,23 +17,21 @@ class Parser:
         """Parse a number and move forward"""
         token = self.current_token
         self.eat(TokenType.NUMBER)
-        return float(token.value)
+        return NumberNode(float(token.value))
     
     def expression(self):
-        """Parse the expression (like: number + number, etc)"""
-        result = self.factor()
+        """Parse the expression and return its AST"""
+        node = self.factor()
         
-        # Keep processing + and - operations
+        # build the tree
         while self.current_token.type in (TokenType.PLUS, TokenType.MINUS):
             token = self.current_token
-            print(token, result)
             if token.type == TokenType.PLUS:
-                #move forward to number
                 self.eat(TokenType.PLUS)
-                #get number and move forward to next symbol
-                result = result + self.factor()
             elif token.type == TokenType.MINUS:
                 self.eat(TokenType.MINUS)
-                result = result - self.factor()
+
+            #create the operation AST
+            node = BinaryOpNode(left=node, operator=token, right=self.factor())
         
-        return result
+        return node
