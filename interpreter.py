@@ -2,10 +2,16 @@ from bim_token import TokenType
 
 #executes the created AST
 class Interpreter:
+    def __init__(self):
+        #stored variables
+        self.variables = {} 
+
     def visit(self, node):
         """execute a node and return it"""
+        if isinstance(node, (int, float)):
+            return node
+
         method_name = f'visit_{type(node).__name__}'
-        
         if hasattr(self, method_name):
             visitor = getattr(self, method_name)
             return visitor(node)
@@ -16,13 +22,26 @@ class Interpreter:
         """just return the number"""
         return node.value
     
+    def visit_VariableNode(self, node):
+        """Look up a variable's value"""
+        if node.name in self.variables:
+            return self.variables[node.name]
+        else:
+            raise Exception(f"Undefined variable: {node.name}")
+
     def visit_BinaryOpNode(self, node):
         """execute the operation and return its value"""
-        left_val = self.visit(node.left)   # Get left side value
-        right_val = self.visit(node.right) # Get right side value
+        left_val = self.visit(node.left)  
+        right_val = self.visit(node.right)
         
         # Do the operation
         if node.operator.type == TokenType.PLUS:
             return left_val + right_val
         elif node.operator.type == TokenType.MINUS:
             return left_val - right_val
+
+    def visit_AssignmentNode(self, node):
+        """Store the assigned variable"""
+        value = self.visit(node.value) 
+        self.variables[node.variable_name] = value
+        return value 

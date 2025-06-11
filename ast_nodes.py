@@ -20,3 +20,19 @@ class BinaryOpNode(ASTNode):
     def __repr__(self):
         return f"BinaryOpNode({self.left}, {self.operator.type}, {self.right})"
 
+class VariableNode(ASTNode):
+    """Represents variable names"""
+    def __init__(self, name):
+        self.name = name
+    
+    def __repr__(self):
+        return f"VariableNode({self.name})"
+
+class AssignmentNode(ASTNode):
+    """Represents variables"""
+    def __init__(self, variable_name, value):
+        self.variable_name = variable_name
+        self.value = value
+    
+    def __repr__(self):
+        return f"AssignmentNode({self.variable_name} = {self.value})"

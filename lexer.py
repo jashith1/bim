@@ -28,6 +28,15 @@ class Lexer:
             self.advance()
         return result
     
+    def read_identifier(self):
+        """Read a variable name'"""
+        result = ""
+        while self.current_char and (self.current_char.isalnum() or self.current_char == '_'):
+            result += self.current_char
+            self.advance()
+        return result
+
+    
     def get_next_token(self):
         """Get the next token from the input"""
         while self.current_char:
@@ -46,8 +55,16 @@ class Lexer:
                 self.advance()
                 return Token(TokenType.MINUS, '-')
             
+            if self.current_char.isalpha() or self.current_char == '_':
+                return Token(TokenType.IDENTIFIER, self.read_identifier())
+            
+            if self.current_char == '=':
+                self.advance()
+                return Token(TokenType.ASSIGN, '=')
+            
+            
             # Throw error if not recognized
             raise Exception(f"Invalid character: {self.current_char}")
         
-        # when out of characters return EOF to signify end
+        # when at end return EOF
         return Token(TokenType.EOF, "")
