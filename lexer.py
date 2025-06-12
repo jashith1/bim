@@ -54,6 +54,14 @@ class Lexer:
             if self.current_char == '-':
                 self.advance()
                 return Token(TokenType.MINUS, '-')
+
+            if self.current_char == '*':
+                self.advance()
+                return Token(TokenType.MULTIPLY, '*')
+            
+            if self.current_char == '/':
+                self.advance()
+                return Token(TokenType.DIVIDE, '/')
             
             if self.current_char.isalpha() or self.current_char == '_':
                 return Token(TokenType.IDENTIFIER, self.read_identifier())

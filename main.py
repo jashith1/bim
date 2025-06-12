@@ -5,10 +5,12 @@ from interpreter import Interpreter
 
 if __name__ == "__main__":
     test_statements = [
-        "bruh=5",
-        "breh= 3 + 9", 
-        "broh=bruh+breh",
-        "result = bruh + breh + broh"
+        "2 + 3 * 4",
+        "10 / 2 + 3",
+        "2 * 3 + 4 * 5",
+        "x = 2 + 3 * 4",
+        "y = x / 2",
+        "z = x + y * 2"
     ]
 
     #same interpreter for all statements because of how memory is handled
@@ -24,5 +26,6 @@ if __name__ == "__main__":
         
         result = interpreter.visit(ast)
         print(f"Result: {result}")
-        print(f"Variables: {interpreter.variables}")
+        if interpreter.variables:
+            print(f"Variables: {interpreter.variables}")
 

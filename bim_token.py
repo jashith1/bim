@@ -14,6 +14,8 @@ class TokenType(Enum):
     NUMBER = "NUMBER"
     PLUS = "PLUS"
     MINUS = "MINUS"
+    MULTIPLY = "MULTIPLY"   
+    DIVIDE = "DIVIDE"      
     EOF = "EOF"  # End of file
     IDENTIFIER = "IDENTIFIER" #variable names
     ASSIGN = "ASSIGN" #assignment operator (ie the "=" sign)

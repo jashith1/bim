@@ -26,13 +26,28 @@ class Parser:
             return VariableNode(token.value)
         
         raise Exception(f"Unexpected token: {token.type}")
+    
+    def term(self):
+        """parse and return AST for multiplication and division (higher precedence than +/-)"""
+        node = self.factor()
+        
+        while self.current_token.type in (TokenType.MULTIPLY, TokenType.DIVIDE):
+            token = self.current_token
+            if token.type == TokenType.MULTIPLY:
+                self.eat(TokenType.MULTIPLY)
+            elif token.type == TokenType.DIVIDE:
+                self.eat(TokenType.DIVIDE)
+            
+            node = BinaryOpNode(left=node, operator=token, right=self.factor())
+        
+        return node
+
 
     
     def expression(self):
-        """Parse the expression and return its AST"""
-        node = self.factor()
+        """Parse and return AST for +/- (lowest priority)"""
+        node = self.term()
         
-        # build the tree
         while self.current_token.type in (TokenType.PLUS, TokenType.MINUS):
             token = self.current_token
             if token.type == TokenType.PLUS:
@@ -40,8 +55,7 @@ class Parser:
             elif token.type == TokenType.MINUS:
                 self.eat(TokenType.MINUS)
 
-            #create the operation AST
-            node = BinaryOpNode(left=node, operator=token, right=self.factor())
+            node = BinaryOpNode(left=node, operator=token, right=self.term())
         
         return node
     

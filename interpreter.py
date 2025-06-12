@@ -39,6 +39,12 @@ class Interpreter:
             return left_val + right_val
         elif node.operator.type == TokenType.MINUS:
             return left_val - right_val
+        elif node.operator.type == TokenType.MULTIPLY:
+            return left_val * right_val
+        elif node.operator.type == TokenType.DIVIDE:
+            if right_val == 0:
+                raise Exception("Division by zero!")
+            return left_val / right_val
 
     def visit_AssignmentNode(self, node):
         """Store the assigned variable"""
