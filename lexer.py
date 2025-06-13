@@ -78,6 +78,9 @@ class Lexer:
                 self.advance()
                 return Token(TokenType.ASSIGN, '=')
             
+            if self.current_char == ',':
+                self.advance()
+                return Token(TokenType.COMMA, ',')
             
             # Throw error if not recognized
             raise Exception(f"Invalid character: {self.current_char}")

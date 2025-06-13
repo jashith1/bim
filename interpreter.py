@@ -5,6 +5,12 @@ class Interpreter:
     def __init__(self):
         #stored variables
         self.variables = {} 
+        self.builtin_functions = {
+            'print': self._builtin_print,
+            'abs': self._builtin_abs,
+            'min': self._builtin_min,
+            'max': self._builtin_max,
+        }
 
     def visit(self, node):
         """execute a node and return it"""
@@ -60,3 +66,35 @@ class Interpreter:
         value = self.visit(node.value) 
         self.variables[node.variable_name] = value
         return value 
+
+    def visit_FunctionCallNode(self, node):
+        """execute the function call with given args"""
+        function_name = node.function_name
+        
+        if function_name in self.builtin_functions:
+            arg_values = [self.visit(arg) for arg in node.arguments]
+            return self.builtin_functions[function_name](arg_values)
+        else:
+            raise Exception(f"Unknown function: {function_name}")
+
+    def _builtin_print(self, args):
+        """prints all arguments separated by spaces"""
+        print(' '.join(str(arg) for arg in args))
+
+    def _builtin_abs(self, args):
+        """Absolute value function"""
+        if len(args) != 1:
+            raise Exception("abs() takes exactly 1 argument")
+        return abs(args[0])
+    
+    def _builtin_min(self, args):
+        """Minimum function"""
+        if len(args) == 0:
+            raise Exception("min() takes at least 1 argument")
+        return min(args)
+    
+    def _builtin_max(self, args):
+        """Maximum function"""
+        if len(args) == 0:
+            raise Exception("max() takes at least 1 argument")
+        return max(args)

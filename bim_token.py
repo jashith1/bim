@@ -18,6 +18,7 @@ class TokenType(Enum):
     DIVIDE = "DIVIDE"      
     LPAREN = "LPAREN"
     RPAREN = "RPAREN"
+    COMMA = "COMMA"
     EOF = "EOF"  # End of file
     IDENTIFIER = "IDENTIFIER" #variable names
     ASSIGN = "ASSIGN" #assignment operator (ie the "=" sign)

@@ -45,3 +45,12 @@ class AssignmentNode(ASTNode):
     
     def __repr__(self):
         return f"AssignmentNode({self.variable_name} = {self.value})"
+
+class FunctionCallNode(ASTNode):
+    """Represents function calls (like print())"""
+    def __init__(self, function_name, arguments):
+        self.function_name = function_name
+        self.arguments = arguments
+    
+    def __repr__(self):
+        return f"FunctionCallNode({self.function_name}, {self.arguments})"

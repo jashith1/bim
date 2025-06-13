@@ -1,5 +1,5 @@
 from bim_token import TokenType, Token
-from ast_nodes import BinaryOpNode, NumberNode, VariableNode, AssignmentNode, UnaryOpNode
+from ast_nodes import BinaryOpNode, NumberNode, VariableNode, AssignmentNode, UnaryOpNode, FunctionCallNode
 
 class Parser:
     def __init__(self, lexer):
@@ -30,8 +30,18 @@ class Parser:
             return NumberNode(float(token.value))
         
         elif token.type == TokenType.IDENTIFIER:
+            function_name = token.value
             self.eat(TokenType.IDENTIFIER)
-            return VariableNode(token.value)
+            
+            if self.current_token.type == TokenType.LPAREN:
+                #function call
+                self.eat(TokenType.LPAREN)
+                arguments = self.parse_arguments()
+                self.eat(TokenType.RPAREN)
+                return FunctionCallNode(function_name, arguments)
+            else:
+                #just a variable
+                return VariableNode(function_name)
         
         elif token.type == TokenType.LPAREN:
             self.eat(TokenType.LPAREN)
@@ -96,3 +106,22 @@ class Parser:
         
         # Parse as expression
         return self.expression()
+    
+    def parse_arguments(self):
+        """Parse comma separated function arguments"""
+        arguments = []
+        
+        #empty
+        if self.current_token.type == TokenType.RPAREN:
+            return arguments
+        
+        #first
+        arguments.append(self.expression())
+        
+        #the rest (comma separeted)
+        while self.current_token.type == TokenType.COMMA:
+            self.eat(TokenType.COMMA)
+            arguments.append(self.expression())
+        
+        return arguments
+
