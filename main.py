@@ -1,18 +1,25 @@
-#TO-DO: Add support for negative numbers
 from lexer import Lexer
 from parser import Parser
 from interpreter import Interpreter
 
 if __name__ == "__main__":
     test_statements = [
-        "(2+ 3) * 4",
-        "10 / (2 + 3)",
-        "2 * (3 + 4) * 5",
-        "x = (2 + 3) * 4",
-        "y = (x / 2)",
-        "z =( x + y) * 2"
+        "-5",                  
+        "+5",                   
+        "--5",        
+        "++5",           
+        "-5 + 3",  
+        "5 + -3",  
+        "-(5 + 3)",    
+        "-5 * -3",     
+        "-(2 + 3) * 4",         
+        "-2 * (3 + 4)",         
+        "(-2 + 3) * (-4 + 5)",
+        "x = -10",             
+        "y = -x",     
+        "z = -(x + y)"  
     ]
-
+    
     #same interpreter for all statements because of how memory is handled
     interpreter = Interpreter()
     

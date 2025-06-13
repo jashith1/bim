@@ -9,6 +9,15 @@ class NumberNode(ASTNode):
     
     def __repr__(self):
         return f"NumberNode({self.value})"
+    
+class UnaryOpNode(ASTNode):
+    """Represents the +/- in front of number to signify signs"""
+    def __init__(self, operator, operand):
+        self.operator = operator
+        self.operand = operand
+    
+    def __repr__(self):
+        return f"UnaryOpNode({self.operator.type}, {self.operand})"
 
 class BinaryOpNode(ASTNode):
     """Represents an operations (ex: 3+4 or 10-6)"""

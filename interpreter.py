@@ -22,6 +22,15 @@ class Interpreter:
         """just return the number"""
         return node.value
     
+    def visit_UnaryOpNode(self, node):
+        """return the value of number along with its sign"""
+        operand_val = self.visit(node.operand)
+        
+        if node.operator.type == TokenType.PLUS:
+            return +operand_val
+        elif node.operator.type == TokenType.MINUS:
+            return -operand_val
+    
     def visit_VariableNode(self, node):
         """Look up a variable's value"""
         if node.name in self.variables:

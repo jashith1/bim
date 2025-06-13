@@ -1,5 +1,5 @@
 from bim_token import TokenType, Token
-from ast_nodes import BinaryOpNode, NumberNode, VariableNode, AssignmentNode
+from ast_nodes import BinaryOpNode, NumberNode, VariableNode, AssignmentNode, UnaryOpNode
 
 class Parser:
     def __init__(self, lexer):
@@ -17,7 +17,15 @@ class Parser:
         """Higher priority (numbers and paranthesis)"""
         token = self.current_token
         
-        if token.type == TokenType.NUMBER:
+        if token.type == TokenType.PLUS:
+            self.eat(TokenType.PLUS)
+            return UnaryOpNode(token, self.factor()) 
+        
+        elif token.type == TokenType.MINUS:
+            self.eat(TokenType.MINUS)
+            return UnaryOpNode(token, self.factor())
+
+        elif token.type == TokenType.NUMBER:
             self.eat(TokenType.NUMBER)
             return NumberNode(float(token.value))
         
