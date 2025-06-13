@@ -5,12 +5,12 @@ from interpreter import Interpreter
 
 if __name__ == "__main__":
     test_statements = [
-        "2 + 3 * 4",
-        "10 / 2 + 3",
-        "2 * 3 + 4 * 5",
-        "x = 2 + 3 * 4",
-        "y = x / 2",
-        "z = x + y * 2"
+        "(2+ 3) * 4",
+        "10 / (2 + 3)",
+        "2 * (3 + 4) * 5",
+        "x = (2 + 3) * 4",
+        "y = (x / 2)",
+        "z =( x + y) * 2"
     ]
 
     #same interpreter for all statements because of how memory is handled

@@ -16,6 +16,8 @@ class TokenType(Enum):
     MINUS = "MINUS"
     MULTIPLY = "MULTIPLY"   
     DIVIDE = "DIVIDE"      
+    LPAREN = "LPAREN"
+    RPAREN = "RPAREN"
     EOF = "EOF"  # End of file
     IDENTIFIER = "IDENTIFIER" #variable names
     ASSIGN = "ASSIGN" #assignment operator (ie the "=" sign)

@@ -63,6 +63,14 @@ class Lexer:
                 self.advance()
                 return Token(TokenType.DIVIDE, '/')
             
+            if self.current_char == '(':
+                self.advance()
+                return Token(TokenType.LPAREN, '(')
+            
+            if self.current_char == ')':
+                self.advance()
+                return Token(TokenType.RPAREN, ')')
+            
             if self.current_char.isalpha() or self.current_char == '_':
                 return Token(TokenType.IDENTIFIER, self.read_identifier())
             

@@ -14,7 +14,7 @@ class Parser:
             raise Exception(f"Expected {token_type}, got {self.current_token.type}")
     
     def factor(self):
-        """Parse a number and move forward"""
+        """Higher priority (numbers and paranthesis)"""
         token = self.current_token
         
         if token.type == TokenType.NUMBER:
@@ -24,6 +24,13 @@ class Parser:
         elif token.type == TokenType.IDENTIFIER:
             self.eat(TokenType.IDENTIFIER)
             return VariableNode(token.value)
+        
+        elif token.type == TokenType.LPAREN:
+            self.eat(TokenType.LPAREN)
+            node = self.expression() 
+            self.eat(TokenType.RPAREN) 
+            return node
+
         
         raise Exception(f"Unexpected token: {token.type}")
     
