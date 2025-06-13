@@ -12,6 +12,7 @@ class Token:
 #Token types recognized by bim
 class TokenType(Enum):
     NUMBER = "NUMBER"
+    STRING = "STRING"
     PLUS = "PLUS"
     MINUS = "MINUS"
     MULTIPLY = "MULTIPLY"   

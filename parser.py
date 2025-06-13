@@ -1,5 +1,5 @@
-from bim_token import TokenType, Token
-from ast_nodes import BinaryOpNode, NumberNode, VariableNode, AssignmentNode, UnaryOpNode, FunctionCallNode
+from bim_token import *
+from ast_nodes import *
 
 class Parser:
     def __init__(self, lexer):
@@ -14,7 +14,7 @@ class Parser:
             raise Exception(f"Expected {token_type}, got {self.current_token.type}")
     
     def factor(self):
-        """Higher priority (numbers and paranthesis)"""
+        """Higher priority (numbers, paranthesis, strings, functions, etc)"""
         token = self.current_token
         
         if token.type == TokenType.PLUS:
@@ -28,6 +28,10 @@ class Parser:
         elif token.type == TokenType.NUMBER:
             self.eat(TokenType.NUMBER)
             return NumberNode(float(token.value))
+        
+        elif token.type == TokenType.STRING:
+            self.eat(TokenType.STRING)
+            return StringNode(token.value)
         
         elif token.type == TokenType.IDENTIFIER:
             function_name = token.value
@@ -53,7 +57,7 @@ class Parser:
         raise Exception(f"Unexpected token: {token.type}")
     
     def term(self):
-        """parse and return AST for multiplication and division (higher precedence than +/-)"""
+        """parse and return AST for multiplication and division (medium priority in PEMDAS)"""
         node = self.factor()
         
         while self.current_token.type in (TokenType.MULTIPLY, TokenType.DIVIDE):
@@ -70,7 +74,7 @@ class Parser:
 
     
     def expression(self):
-        """Parse and return AST for +/- (lowest priority)"""
+        """Parse and return AST for addition and subtraction (lowest priority in PEMDAS)"""
         node = self.term()
         
         while self.current_token.type in (TokenType.PLUS, TokenType.MINUS):

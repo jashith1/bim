@@ -36,6 +36,43 @@ class Lexer:
             self.advance()
         return result
 
+    def read_string(self):
+        """Read a string"""
+        result = ""
+        self.advance()  # Skip opening quote
+        
+        while self.current_char and self.current_char != '"':
+            if self.current_char == '\\':
+                # Handle escape sequences (needs to be added together, wont work as intended if added one character at a time)
+                self.advance()
+                if self.current_char is None:
+                    raise Exception("Unterminated string literal")
+                
+                if self.current_char == 'n':
+                    result += '\n'
+                elif self.current_char == 't':
+                    result += '\t'
+                elif self.current_char == 'r':
+                    result += '\r'
+                elif self.current_char == '\\':
+                    result += '\\'
+                elif self.current_char == '"':
+                    result += '"'
+                else:
+                    # For unknown escape sequences, just include the character
+                    result += self.current_char
+                self.advance()
+            else:
+                result += self.current_char
+                self.advance()
+        
+        if self.current_char != '"':
+            raise Exception("Unterminated string literal")
+        
+        self.advance()  # Skip closing quote
+        return result
+
+
     
     def get_next_token(self):
         """Get the next token from the input"""
@@ -46,6 +83,9 @@ class Lexer:
             
             if self.current_char.isdigit():
                 return Token(TokenType.NUMBER, self.read_number())
+            
+            if self.current_char == '"':
+                return Token(TokenType.STRING, self.read_string())
             
             if self.current_char == '+':
                 self.advance()

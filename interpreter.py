@@ -10,6 +10,9 @@ class Interpreter:
             'abs': self._builtin_abs,
             'min': self._builtin_min,
             'max': self._builtin_max,
+            'len': self._builtin_len,
+            'upper': self._builtin_upper,
+            'lower': self._builtin_lower,
         }
 
     def visit(self, node):
@@ -26,6 +29,10 @@ class Interpreter:
     
     def visit_NumberNode(self, node):
         """just return the number"""
+        return node.value
+    
+    def visit_StringNode(self, node):
+        """Return the string value"""
         return node.value
     
     def visit_UnaryOpNode(self, node):
@@ -51,12 +58,28 @@ class Interpreter:
         
         # Do the operation
         if node.operator.type == TokenType.PLUS:
+            if isinstance(left_val, str) or isinstance(right_val, str):
+                return str(left_val) + str(right_val)
             return left_val + right_val
+        
         elif node.operator.type == TokenType.MINUS:
+            if isinstance(left_val, str) or isinstance(right_val, str):
+                raise Exception("Cannot subtract strings")
             return left_val - right_val
+        
         elif node.operator.type == TokenType.MULTIPLY:
-            return left_val * right_val
+            if isinstance(left_val, str) and isinstance(right_val, (int, float)):
+                return left_val * int(right_val)
+            elif isinstance(left_val, (int, float)) and isinstance(right_val, str):
+                return int(left_val) * right_val
+            elif isinstance(left_val, (int, float)) and isinstance(right_val, (int, float)):
+                return left_val * right_val
+            else:
+                raise Exception("Unsupported multiplication operation")
+            
         elif node.operator.type == TokenType.DIVIDE:
+            if isinstance(left_val, str) or isinstance(right_val, str):
+                raise Exception("Cannot divide strings")
             if right_val == 0:
                 raise Exception("Division by zero!")
             return left_val / right_val
@@ -85,6 +108,8 @@ class Interpreter:
         """Absolute value function"""
         if len(args) != 1:
             raise Exception("abs() takes exactly 1 argument")
+        if isinstance(args[0], str):
+            raise Exception("abs() cannot be applied to strings")
         return abs(args[0])
     
     def _builtin_min(self, args):
@@ -98,3 +123,30 @@ class Interpreter:
         if len(args) == 0:
             raise Exception("max() takes at least 1 argument")
         return max(args)
+
+    def _builtin_len(self, args):
+        """returns length of string"""
+        if len(args) != 1:
+            raise Exception("len() takes exactly 1 argument")
+        if isinstance(args[0], str):
+            return len(args[0])
+        else:
+            raise Exception("len() can only be applied to strings")
+    
+    def _builtin_upper(self, args):
+        """Convert string to uppercase"""
+        if len(args) != 1:
+            raise Exception("upper() takes exactly 1 argument")
+        if isinstance(args[0], str):
+            return args[0].upper()
+        else:
+            raise Exception("upper() can only be applied to strings")
+    
+    def _builtin_lower(self, args):
+        """Convert string to lowercase"""
+        if len(args) != 1:
+            raise Exception("lower() takes exactly 1 argument")
+        if isinstance(args[0], str):
+            return args[0].lower()
+        else:
+            raise Exception("lower() can only be applied to strings")
