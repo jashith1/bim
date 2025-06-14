@@ -20,6 +20,14 @@ class TokenType(Enum):
     LPAREN = "LPAREN"
     RPAREN = "RPAREN"
     COMMA = "COMMA"
+    EQUAL = "EQUAL"
+    NOT_EQUAL = "NOT_EQUAL"
+    LESS_THAN = "LESS_THAN"
+    GREATER_THAN = "GREATER_THAN"
+    LESS_EQUAL = "LESS_EQUAL"
+    GREATER_EQUAL = "GREATER_EQUAL"
+    TRUE = "TRUE"
+    FALSE = "FALSE"
     EOF = "EOF"  # End of file
     IDENTIFIER = "IDENTIFIER" #variable names
     ASSIGN = "ASSIGN" #assignment operator (ie the "=" sign)

@@ -4,22 +4,22 @@ from interpreter import Interpreter
 
 if __name__ == "__main__":
     test_statements = [
-        '"hello world"',   
-        'print("Hello, World!")',     
-        'print("hello\nworld")',  
-        
-        'name = "Ryo"',                  
-        'print("Hello,", name)',
-        'greeting = "Hi " + name',
-        'print(greeting)',
-        '"ha" * 3',                      
-        '3 * "ho"',                       
-
-        'len("hello")',                   
-        'upper("hello")',                  
-        'lower("WORLD")',                
-
-        'print("x = " + x + ", x * 2 = " + (x * 2))',
+        'print(true)',                      
+        'print(false)',                     
+        'is_ready = true',                  
+        'print("Ready:", is_ready)',     
+        '5 == 5',                       
+        '5 != 3',                           
+        '3 < 5',                         
+        '5 > 3',                        
+        '"hello" == "hello"',           
+        '"hello" != "world"',       
+        '5 == "5"',                       
+        'x = 10',
+        'y = 5',
+        'print(x > y)',                     
+        'print(x * 2 == 20)',            
+        'print(len("hello") < 10)',       
     ]
     
     #same interpreter for all statements because of how memory is handled

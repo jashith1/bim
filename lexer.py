@@ -14,6 +14,13 @@ class Lexer:
             self.current_char = None
         else:
             self.current_char = self.text[self.pos]
+
+    def peek(self):
+        """Look at the next character without advancing"""
+        peek_pos = self.pos + 1
+        if peek_pos >= len(self.text):
+            return None
+        return self.text[peek_pos]
     
     def skip_whitespace(self):
         """Skip spaces and tabs"""
@@ -37,7 +44,7 @@ class Lexer:
         return result
 
     def read_string(self):
-        """Read a string"""
+        """Read a string (or check if provided input is a boolean)"""
         result = ""
         self.advance()  # Skip opening quote
         
@@ -112,18 +119,53 @@ class Lexer:
                 return Token(TokenType.RPAREN, ')')
             
             if self.current_char.isalpha() or self.current_char == '_':
-                return Token(TokenType.IDENTIFIER, self.read_identifier())
+                identifier = self.read_identifier()
+                if identifier == 'true':
+                    return Token(TokenType.TRUE, True)
+                elif identifier == 'false':
+                    return Token(TokenType.FALSE, False)
+
+                return Token(TokenType.IDENTIFIER, identifier)
             
             if self.current_char == '=':
-                self.advance()
-                return Token(TokenType.ASSIGN, '=')
+                if self.peek() == '=':
+                    self.advance()
+                    self.advance()
+                    return Token(TokenType.EQUAL, '==')
+                else:
+                    self.advance()
+                    return Token(TokenType.ASSIGN, '=')
+            
+            if self.current_char == '!':
+                if self.peek() == '=':
+                    self.advance()
+                    self.advance()
+                    return Token(TokenType.NOT_EQUAL, '!=')
+                else:
+                    raise Exception(f"Invalid character: {self.current_char}")
+            
+            if self.current_char == '<':
+                if self.peek() == '=':
+                    self.advance()
+                    self.advance()
+                    return Token(TokenType.LESS_EQUAL, '<=')
+                else:
+                    self.advance()
+                    return Token(TokenType.LESS_THAN, '<')
+            
+            if self.current_char == '>':
+                if self.peek() == '=':
+                    self.advance()
+                    self.advance()
+                    return Token(TokenType.GREATER_EQUAL, '>=')
+                else:
+                    self.advance()
+                    return Token(TokenType.GREATER_THAN, '>')
+
             
             if self.current_char == ',':
                 self.advance()
                 return Token(TokenType.COMMA, ',')
-            
-            # Throw error if not recognized
-            raise Exception(f"Invalid character: {self.current_char}")
         
         # when at end return EOF
         return Token(TokenType.EOF, "")

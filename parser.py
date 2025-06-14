@@ -33,6 +33,14 @@ class Parser:
             self.eat(TokenType.STRING)
             return StringNode(token.value)
         
+        elif token.type == TokenType.TRUE:
+            self.eat(TokenType.TRUE)
+            return BooleanNode(True)
+        
+        elif token.type == TokenType.FALSE:
+            self.eat(TokenType.FALSE)
+            return BooleanNode(False)
+        
         elif token.type == TokenType.IDENTIFIER:
             function_name = token.value
             self.eat(TokenType.IDENTIFIER)
@@ -57,7 +65,7 @@ class Parser:
         raise Exception(f"Unexpected token: {token.type}")
     
     def term(self):
-        """parse and return AST for multiplication and division (medium priority in PEMDAS)"""
+        """parse and return AST for multiplication and division (medium-high priority in PEMDAS)"""
         node = self.factor()
         
         while self.current_token.type in (TokenType.MULTIPLY, TokenType.DIVIDE):
@@ -70,11 +78,9 @@ class Parser:
             node = BinaryOpNode(left=node, operator=token, right=self.factor())
         
         return node
-
-
     
-    def expression(self):
-        """Parse and return AST for addition and subtraction (lowest priority in PEMDAS)"""
+    def arithmetic_expression(self):
+        """Parse and return AST for addition and subtraction (medium-low priority in PEMDAS)"""
         node = self.term()
         
         while self.current_token.type in (TokenType.PLUS, TokenType.MINUS):
@@ -85,6 +91,30 @@ class Parser:
                 self.eat(TokenType.MINUS)
 
             node = BinaryOpNode(left=node, operator=token, right=self.term())
+        
+        return node
+    
+    def expression(self):
+        """Lowest precedence: comparison operators"""
+        node = self.arithmetic_expression()
+        possible = (TokenType.EQUAL, TokenType.NOT_EQUAL, TokenType.LESS_THAN, TokenType.GREATER_THAN, TokenType.LESS_EQUAL, TokenType.GREATER_EQUAL)
+        
+        while self.current_token.type in possible:
+            token = self.current_token
+            if token.type == TokenType.EQUAL:
+                self.eat(TokenType.EQUAL)
+            elif token.type == TokenType.NOT_EQUAL:
+                self.eat(TokenType.NOT_EQUAL)
+            elif token.type == TokenType.LESS_THAN:
+                self.eat(TokenType.LESS_THAN)
+            elif token.type == TokenType.GREATER_THAN:
+                self.eat(TokenType.GREATER_THAN)
+            elif token.type == TokenType.LESS_EQUAL:
+                self.eat(TokenType.LESS_EQUAL)
+            elif token.type == TokenType.GREATER_EQUAL:
+                self.eat(TokenType.GREATER_EQUAL)
+            
+            node = BinaryOpNode(left=node, operator=token, right=self.arithmetic_expression())
         
         return node
     

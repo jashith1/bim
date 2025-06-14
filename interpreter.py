@@ -35,6 +35,9 @@ class Interpreter:
         """Return the string value"""
         return node.value
     
+    def visit_BooleanNode(self, node):
+        return node.value
+    
     def visit_UnaryOpNode(self, node):
         """return the value of number along with its sign"""
         operand_val = self.visit(node.operand)
@@ -57,6 +60,7 @@ class Interpreter:
         right_val = self.visit(node.right)
         
         # Do the operation
+        #math symbols
         if node.operator.type == TokenType.PLUS:
             if isinstance(left_val, str) or isinstance(right_val, str):
                 return str(left_val) + str(right_val)
@@ -83,6 +87,21 @@ class Interpreter:
             if right_val == 0:
                 raise Exception("Division by zero!")
             return left_val / right_val
+        
+        #comparisons
+        elif node.operator.type == TokenType.EQUAL:
+            return left_val == right_val
+        elif node.operator.type == TokenType.NOT_EQUAL:
+            return left_val != right_val
+        elif node.operator.type == TokenType.LESS_THAN:
+            return left_val < right_val
+        elif node.operator.type == TokenType.GREATER_THAN:
+            return left_val > right_val
+        elif node.operator.type == TokenType.LESS_EQUAL:
+            return left_val <= right_val
+        elif node.operator.type == TokenType.GREATER_EQUAL:
+            return left_val >= right_val
+
 
     def visit_AssignmentNode(self, node):
         """Store the assigned variable"""

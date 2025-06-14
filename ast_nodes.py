@@ -17,6 +17,13 @@ class StringNode(ASTNode):
     def __repr__(self):
         return f"StringNode('{self.value}')"
     
+class BooleanNode(ASTNode):
+    def __init__(self, value):
+        self.value = bool(value)
+    
+    def __repr__(self):
+        return f"BooleanNode({self.value})"
+    
 class UnaryOpNode(ASTNode):
     """Represents the +/- in front of number to signify signs"""
     def __init__(self, operator, operand):
