@@ -120,6 +120,9 @@ class Parser:
     
     def statement(self):
         """Parse a statement (ie assignment or expression)"""
+        if self.current_token.type == TokenType.IF:
+            return self.parse_if()
+
         if self.current_token.type == TokenType.IDENTIFIER:
             #temporarily store the data
             saved_lexer_pos = self.lexer.pos
@@ -159,3 +162,33 @@ class Parser:
         
         return arguments
 
+    def parse_block(self):
+        """Parse a block of statements enclosed in braces"""
+        self.eat(TokenType.LBRACE)
+        statements = []
+        
+        while self.current_token.type != TokenType.RBRACE and self.current_token.type != TokenType.EOF:
+            stmt = self.statement()
+            statements.append(stmt)
+            
+            if self.current_token.type == TokenType.COMMA: 
+                self.eat(TokenType.COMMA)
+        
+        self.eat(TokenType.RBRACE)
+        return BlockNode(statements)
+
+    def parse_if(self):
+        """Parse if statement"""
+        self.eat(TokenType.IF)
+        self.eat(TokenType.LPAREN)
+        condition = self.expression()
+        self.eat(TokenType.RPAREN)
+        
+        if_body = self.parse_block()
+        
+        else_body = None
+        if self.current_token.type == TokenType.ELSE:
+            self.eat(TokenType.ELSE)
+            else_body = self.parse_block()
+        
+        return IfNode(condition, if_body, else_body)

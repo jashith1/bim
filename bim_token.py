@@ -28,6 +28,10 @@ class TokenType(Enum):
     GREATER_EQUAL = "GREATER_EQUAL"
     TRUE = "TRUE"
     FALSE = "FALSE"
+    IF = "IF"
+    ELSE = "ELSE"
+    LBRACE = "LBRACE" #{
+    RBRACE = "RBRACE" #}
     EOF = "EOF"  # End of file
     IDENTIFIER = "IDENTIFIER" #variable names
     ASSIGN = "ASSIGN" #assignment operator (ie the "=" sign)

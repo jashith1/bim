@@ -4,23 +4,11 @@ from interpreter import Interpreter
 
 if __name__ == "__main__":
     test_statements = [
-        'print(true)',                      
-        'print(false)',                     
-        'is_ready = true',                  
-        'print("Ready:", is_ready)',     
-        '5 == 5',                       
-        '5 != 3',                           
-        '3 < 5',                         
-        '5 > 3',                        
-        '"hello" == "hello"',           
-        '"hello" != "world"',       
-        '5 == "5"',                       
-        'x = 10',
-        'y = 5',
-        'print(x > y)',                     
-        'print(x * 2 == 20)',            
-        'print(len("hello") < 10)',       
+        'age = 25',
+        'if (age >= 18) { print("You are an adult"), status = "adult" } else { print("You are a minor"), status = "minor" }',
+        'print("Status:", status)',
     ]
+
     
     #same interpreter for all statements because of how memory is handled
     interpreter = Interpreter()

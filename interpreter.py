@@ -53,6 +53,37 @@ class Interpreter:
             return self.variables[node.name]
         else:
             raise Exception(f"Undefined variable: {node.name}")
+        
+    def visit_IfNode(self, node):
+        """execute if node"""
+        condition_value = self.visit(node.condition)
+        
+        # Convert condition to boolean
+        if self.is_truthy(condition_value):
+            return self.visit(node.if_body)
+        elif node.else_body:
+            return self.visit(node.else_body)
+        else:
+            return None
+        
+    def visit_BlockNode(self, node):
+        """execute contents of block"""
+        result = None
+        for statement in node.statements:
+            result = self.visit(statement)
+        return result
+    
+    def is_truthy(self, value):
+        """Determine if a condition is true"""
+        if isinstance(value, bool):
+            return value
+        elif isinstance(value, (int, float)):
+            return value != 0
+        elif isinstance(value, str):
+            return len(value) > 0
+        else:
+            return value is not None
+
 
     def visit_BinaryOpNode(self, node):
         """execute the operation and return its value"""

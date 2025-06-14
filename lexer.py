@@ -124,6 +124,10 @@ class Lexer:
                     return Token(TokenType.TRUE, True)
                 elif identifier == 'false':
                     return Token(TokenType.FALSE, False)
+                elif identifier == 'if':
+                    return Token(TokenType.IF, 'if')
+                elif identifier == 'else':
+                    return Token(TokenType.ELSE, 'else')
 
                 return Token(TokenType.IDENTIFIER, identifier)
             
@@ -162,10 +166,17 @@ class Lexer:
                     self.advance()
                     return Token(TokenType.GREATER_THAN, '>')
 
-            
             if self.current_char == ',':
                 self.advance()
                 return Token(TokenType.COMMA, ',')
+            
+            if self.current_char == '{':
+                self.advance()
+                return Token(TokenType.LBRACE, '{')
+            
+            if self.current_char == '}':
+                self.advance()
+                return Token(TokenType.RBRACE, '}')
         
         # when at end return EOF
         return Token(TokenType.EOF, "")
