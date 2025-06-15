@@ -12,6 +12,12 @@ class Parser:
             self.current_token = self.lexer.get_next_token()
         else:
             raise Exception(f"Expected {token_type}, got {self.current_token.type}")
+        
+    def skip_newlines(self):
+        """Skip any newline tokens"""
+        while self.current_token.type == TokenType.NEWLINE:
+            self.eat(TokenType.NEWLINE)
+
     
     def factor(self):
         """Higher priority (numbers, paranthesis, strings, functions, etc)"""
@@ -120,6 +126,7 @@ class Parser:
     
     def statement(self):
         """Parse a statement (ie assignment or expression)"""
+        self.skip_newlines()
         if self.current_token.type == TokenType.IF:
             return self.parse_if()
 
@@ -164,15 +171,16 @@ class Parser:
 
     def parse_block(self):
         """Parse a block of statements enclosed in braces"""
-        self.eat(TokenType.LBRACE)
+        self.eat(TokenType.LBRACE)        
+        self.skip_newlines()
         statements = []
         
         while self.current_token.type != TokenType.RBRACE and self.current_token.type != TokenType.EOF:
             stmt = self.statement()
             statements.append(stmt)
             
-            if self.current_token.type == TokenType.COMMA: 
-                self.eat(TokenType.COMMA)
+            while self.current_token.type in (TokenType.SEMICOLON, TokenType.COMMA, TokenType.NEWLINE):
+                self.current_token = self.lexer.get_next_token()
         
         self.eat(TokenType.RBRACE)
         return BlockNode(statements)
@@ -184,11 +192,32 @@ class Parser:
         condition = self.expression()
         self.eat(TokenType.RPAREN)
         
+        self.skip_newlines()
         if_body = self.parse_block()
+        self.skip_newlines()
         
         else_body = None
         if self.current_token.type == TokenType.ELSE:
             self.eat(TokenType.ELSE)
+            self.skip_newlines()
             else_body = self.parse_block()
         
         return IfNode(condition, if_body, else_body)
+    
+    def parse_program(self):
+        """Parse complete program with multiple statements"""
+        statements = []
+        
+        while self.current_token.type != TokenType.EOF:
+            self.skip_newlines() 
+            
+            if self.current_token.type == TokenType.EOF:
+                break
+                
+            stmt = self.statement()
+            statements.append(stmt)
+            
+            while self.current_token.type in (TokenType.SEMICOLON, TokenType.COMMA, TokenType.NEWLINE):
+                self.current_token = self.lexer.get_next_token()
+        
+        return BlockNode(statements)

@@ -32,6 +32,8 @@ class TokenType(Enum):
     ELSE = "ELSE"
     LBRACE = "LBRACE" #{
     RBRACE = "RBRACE" #}
+    SEMICOLON = "SEMICOLON"
+    NEWLINE = "NEWLINE"
     EOF = "EOF"  # End of file
     IDENTIFIER = "IDENTIFIER" #variable names
     ASSIGN = "ASSIGN" #assignment operator (ie the "=" sign)

@@ -84,9 +84,13 @@ class Lexer:
     def get_next_token(self):
         """Get the next token from the input"""
         while self.current_char:
-            if self.current_char.isspace():
+            if self.current_char in ' \t\r':
                 self.skip_whitespace()
                 continue
+            
+            if self.current_char == '\n':
+                self.advance()
+                return Token(TokenType.NEWLINE, '\n')
             
             if self.current_char.isdigit():
                 return Token(TokenType.NUMBER, self.read_number())
@@ -177,6 +181,9 @@ class Lexer:
             if self.current_char == '}':
                 self.advance()
                 return Token(TokenType.RBRACE, '}')
+            
+            elif self.current_char == ';':
+                return Token(TokenType.EOF, "")
         
         # when at end return EOF
         return Token(TokenType.EOF, "")
