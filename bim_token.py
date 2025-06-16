@@ -38,3 +38,9 @@ class TokenType(Enum):
     EOF = "EOF"  # End of file
     IDENTIFIER = "IDENTIFIER" #variable names
     ASSIGN = "ASSIGN" #assignment operator (ie the "=" sign)
+    #loops
+    WHILE = "WHILE"
+    FOR = "FOR"
+    IN = "IN" # ex: "for x in range(10)"
+    BREAK = "BREAK"
+    CONTINUE = "CONTINUE"

@@ -1,27 +1,24 @@
+#TO-DO: Arrays, user defined functions, continue and break in loops
 from lexer import Lexer
 from parser import Parser
 from interpreter import Interpreter
 
 if __name__ == "__main__":
     program =  '''
-    score = 77
-    if (score == 100) 
-    {
-        print("perfect score!")
-    } else if (score > 90){
-        print("A!")
-    } 
-    else    if   (score > 80)   {
-        print("B!")
-      } else if(score > 70){
-    print("C!")
-    }
-    else {
-    print("fail")
-        }'''
-    
-    
+        i = 0
+        while (i < 5) {
+            print("While loop:", i)
+            i = i + 1
+        }
 
+        for (x in range(3)) {
+            print("For loop:", x)
+        }
+
+        for (char in "hello") {
+            print("Character:", char)
+        }
+    '''
     
     #same interpreter for all statements because of how memory is handled``
     interpreter = Interpreter()

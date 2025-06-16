@@ -129,6 +129,11 @@ class Parser:
         self.skip_newlines()
         if self.current_token.type == TokenType.IF:
             return self.parse_if()
+        elif self.current_token.type == TokenType.WHILE:
+            return self.parse_while()
+        elif self.current_token.type == TokenType.FOR:
+            return self.parse_for()
+
 
         if self.current_token.type == TokenType.IDENTIFIER:
             #temporarily store the data
@@ -218,6 +223,38 @@ class Parser:
         
         return IfNode(condition, if_body, elif_clauses, else_body)
     
+    def parse_while(self):
+        """Parse while loop"""
+        self.eat(TokenType.WHILE)
+        self.eat(TokenType.LPAREN)
+        condition = self.expression()
+        self.eat(TokenType.RPAREN)
+        
+        self.skip_newlines()
+        body = self.parse_block()
+        
+        return WhileNode(condition, body)
+
+    def parse_for(self):
+        """Parse for loop"""
+        self.eat(TokenType.FOR)
+        self.eat(TokenType.LPAREN)
+        
+        if self.current_token.type != TokenType.IDENTIFIER:
+            raise Exception("Expected variable name in for loop")
+        variable_name = self.current_token.value
+        self.eat(TokenType.IDENTIFIER)
+        
+        self.eat(TokenType.IN)
+        iterable = self.expression()  # This could be range() or other iterable
+        
+        self.eat(TokenType.RPAREN)
+        self.skip_newlines()
+        body = self.parse_block()
+        
+        return ForNode(variable_name, iterable, body)
+
+    
     def parse_program(self):
         """Parse complete program with multiple statements"""
         statements = []
@@ -235,3 +272,4 @@ class Parser:
                 self.current_token = self.lexer.get_next_token()
         
         return BlockNode(statements)
+

@@ -131,6 +131,7 @@ class Lexer:
                     return Token(TokenType.TRUE, True)
                 elif identifier == 'false':
                     return Token(TokenType.FALSE, False)
+                
                 elif identifier == 'if':
                     return Token(TokenType.IF, 'if')
                 elif identifier == 'else':
@@ -142,6 +143,17 @@ class Lexer:
                         self.read_identifier()
                         return Token(TokenType.ELIF, 'elif')
                     return Token(TokenType.ELSE, 'else')
+                
+                elif identifier == 'while':
+                    return Token(TokenType.WHILE, 'while')
+                elif identifier == 'for':
+                    return Token(TokenType.FOR, 'for')
+                elif identifier == 'in':
+                    return Token(TokenType.IN, 'in')
+                elif identifier == 'break':
+                    return Token(TokenType.BREAK, 'break')
+                elif identifier == 'continue':
+                    return Token(TokenType.CONTINUE, 'continue')
 
                 return Token(TokenType.IDENTIFIER, identifier)
             
@@ -193,6 +205,7 @@ class Lexer:
                 return Token(TokenType.RBRACE, '}')
             
             elif self.current_char == ';':
+                #; is treated as end of line
                 return Token(TokenType.EOF, "")
         
         # when at end return EOF

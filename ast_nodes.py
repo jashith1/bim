@@ -94,3 +94,31 @@ class BlockNode(ASTNode):
     def __repr__(self):
         return f"BlockNode({self.statements})"
 
+class WhileNode(ASTNode):
+    """Represents while loops"""
+    def __init__(self, condition, body):
+        self.condition = condition
+        self.body = body
+    
+    def __repr__(self):
+        return f"WhileNode(condition={self.condition}, body={self.body})"
+
+class ForNode(ASTNode):
+    """Represents for loops"""
+    def __init__(self, variable, iterable, body):
+        self.variable = variable
+        self.iterable = iterable
+        self.body = body
+    
+    def __repr__(self):
+        return f"ForNode(variable={self.variable}, iterable={self.iterable}, body={self.body})"
+
+class RangeNode(ASTNode):
+    """Represents range ndoe in for loops"""
+    def __init__(self, start, stop, step=None):
+        self.start = start
+        self.stop = stop
+        self.step = step
+    
+    def __repr__(self):
+        return f"RangeNode(start={self.start}, stop={self.stop}, step={self.step})"

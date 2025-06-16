@@ -13,6 +13,7 @@ class Interpreter:
             'len': self._builtin_len,
             'upper': self._builtin_upper,
             'lower': self._builtin_lower,
+            'range': self._builtin_range,
         }
 
     def visit(self, node):
@@ -145,6 +146,58 @@ class Interpreter:
         value = self.visit(node.value) 
         self.variables[node.variable_name] = value
         return value 
+    
+    def visit_WhileNode(self, node):
+        """Execute while loop"""
+        result = None
+        while True:
+            condition_value = self.visit(node.condition)
+            if not self.is_truthy(condition_value):
+                break
+            result = self.visit(node.body)
+        return result
+
+    def visit_ForNode(self, node):
+        """Execute for loop"""
+        result = None
+        
+        iterable_value = self.visit(node.iterable)
+        
+        if isinstance(iterable_value, list):
+            items = iterable_value
+        elif isinstance(iterable_value, str):
+            items = list(iterable_value)
+        elif isinstance(iterable_value, range):
+            items = list(iterable_value)
+        else:
+            raise Exception(f"Cannot iterate over {type(iterable_value)}")
+        
+        # Save the old value of the loop variable (if it exists)
+        old_value = self.variables.get(node.variable)
+        
+        try:
+            for item in items:
+                self.variables[node.variable] = item
+                result = self.visit(node.body)
+        finally:
+            # Restore the old value of the loop variable
+            if old_value is not None:
+                self.variables[node.variable] = old_value
+            elif node.variable in self.variables:
+                del self.variables[node.variable]
+        
+        return result
+
+    def visit_RangeNode(self, node):
+        """Create a range object"""
+        start_val = self.visit(node.start)
+        stop_val = self.visit(node.stop)
+        
+        if node.step:
+            step_val = self.visit(node.step)
+            return range(int(start_val), int(stop_val), int(step_val))
+        else:
+            return range(int(start_val), int(stop_val))
 
     def visit_FunctionCallNode(self, node):
         """execute the function call with given args"""
@@ -206,3 +259,14 @@ class Interpreter:
             return args[0].lower()
         else:
             raise Exception("lower() can only be applied to strings")
+
+    def _builtin_range(self, args):
+        """Range function - creates a range object"""
+        if len(args) == 1:
+            return range(int(args[0]))
+        elif len(args) == 2:
+            return range(int(args[0]), int(args[1]))
+        elif len(args) == 3:
+            return range(int(args[0]), int(args[1]), int(args[2]))
+        else:
+            raise Exception("range() takes 1 to 3 arguments")
