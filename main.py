@@ -3,16 +3,27 @@ from parser import Parser
 from interpreter import Interpreter
 
 if __name__ == "__main__":
-    program =  '''x = 4if (x > 40) 
-        {
-    print("This is on multiple lines")
-    } else {
-    print("hi")}'''
+    program =  '''
+    score = 77
+    if (score == 100) 
+    {
+        print("perfect score!")
+    } else if (score > 90){
+        print("A!")
+    } 
+    else    if   (score > 80)   {
+        print("B!")
+      } else if(score > 70){
+    print("C!")
+    }
+    else {
+    print("fail")
+        }'''
     
     
 
     
-    #same interpreter for all statements because of how memory is handled
+    #same interpreter for all statements because of how memory is handled``
     interpreter = Interpreter()
     
     print(program)

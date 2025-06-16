@@ -61,10 +61,16 @@ class Interpreter:
         # Convert condition to boolean
         if self.is_truthy(condition_value):
             return self.visit(node.if_body)
-        elif node.else_body:
+        
+        for elif_condition, elif_body in node.elif_clauses:
+            elif_condition_value = self.visit(elif_condition)
+            if self.is_truthy(elif_condition_value):
+                return self.visit(elif_body)
+
+        if node.else_body:
             return self.visit(node.else_body)
-        else:
-            return None
+        
+        return None
         
     def visit_BlockNode(self, node):
         """execute contents of block"""

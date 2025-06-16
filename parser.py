@@ -194,7 +194,21 @@ class Parser:
         
         self.skip_newlines()
         if_body = self.parse_block()
+
+        elif_clauses = []
         self.skip_newlines()
+
+        while self.current_token.type == TokenType.ELIF:
+            self.eat(TokenType.ELIF)
+            self.eat(TokenType.LPAREN)
+            elif_condition = self.expression()
+            self.eat(TokenType.RPAREN)
+            
+            self.skip_newlines()
+            elif_body = self.parse_block()
+            
+            elif_clauses.append((elif_condition, elif_body))
+            self.skip_newlines()
         
         else_body = None
         if self.current_token.type == TokenType.ELSE:
@@ -202,7 +216,7 @@ class Parser:
             self.skip_newlines()
             else_body = self.parse_block()
         
-        return IfNode(condition, if_body, else_body)
+        return IfNode(condition, if_body, elif_clauses, else_body)
     
     def parse_program(self):
         """Parse complete program with multiple statements"""

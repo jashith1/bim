@@ -71,16 +71,20 @@ class FunctionCallNode(ASTNode):
 
 class IfNode(ASTNode):
     """Represents if statements"""
-    def __init__(self, condition, if_body, else_body=None):
+    def __init__(self, condition, if_body, elif_clauses = None, else_body=None):
         self.condition = condition
         self.if_body = if_body
         self.else_body = else_body
+        self.elif_clauses = elif_clauses or []
     
     def __repr__(self):
+        result = f"IfNode(condition={self.condition}, if_body={self.if_body}"
+        if self.elif_clauses:
+            result += f", elif_clauses={self.elif_clauses}"
         if self.else_body:
-            return f"IfNode(condition={self.condition}, if_body={self.if_body}, else_body={self.else_body})"
-        else:
-            return f"IfNode(condition={self.condition}, if_body={self.if_body})"
+            result += f", else_body={self.else_body}"
+        result += ")"
+        return result
 
 class BlockNode(ASTNode):
     """Represents statement blocks"""

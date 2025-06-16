@@ -17,8 +17,8 @@ class TokenType(Enum):
     MINUS = "MINUS"
     MULTIPLY = "MULTIPLY"   
     DIVIDE = "DIVIDE"      
-    LPAREN = "LPAREN"
-    RPAREN = "RPAREN"
+    LPAREN = "LPAREN" #(
+    RPAREN = "RPAREN" #)
     COMMA = "COMMA"
     EQUAL = "EQUAL"
     NOT_EQUAL = "NOT_EQUAL"
@@ -30,6 +30,7 @@ class TokenType(Enum):
     FALSE = "FALSE"
     IF = "IF"
     ELSE = "ELSE"
+    ELIF = "ELIF" #note: lexer expects `else if` and not `elif`
     LBRACE = "LBRACE" #{
     RBRACE = "RBRACE" #}
     SEMICOLON = "SEMICOLON"

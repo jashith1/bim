@@ -15,12 +15,15 @@ class Lexer:
         else:
             self.current_char = self.text[self.pos]
 
-    def peek(self):
-        """Look at the next character without advancing"""
+    def peek(self, n=1):
+        """Look at the next n character without advancing"""
+        res = ""
         peek_pos = self.pos + 1
-        if peek_pos >= len(self.text):
-            return None
-        return self.text[peek_pos]
+        while peek_pos < len(self.text) and peek_pos <= self.pos+n:
+            res += self.text[peek_pos]
+            peek_pos += 1
+        
+        return res
     
     def skip_whitespace(self):
         """Skip spaces and tabs"""
@@ -131,6 +134,13 @@ class Lexer:
                 elif identifier == 'if':
                     return Token(TokenType.IF, 'if')
                 elif identifier == 'else':
+                    #skip whitespace
+                    self.skip_whitespace()
+                    #check if its an else if
+                    if self.current_char == "i" and self.peek() == "f":
+                        #skip the "if" part
+                        self.read_identifier()
+                        return Token(TokenType.ELIF, 'elif')
                     return Token(TokenType.ELSE, 'else')
 
                 return Token(TokenType.IDENTIFIER, identifier)
