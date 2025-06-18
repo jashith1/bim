@@ -122,3 +122,19 @@ class RangeNode(ASTNode):
     
     def __repr__(self):
         return f"RangeNode(start={self.start}, stop={self.stop}, step={self.step})"
+
+class BreakNode(ASTNode):
+    """Represents break node"""
+    def __init__(self):
+        pass
+    
+    def __repr__(self):
+        return "BreakNode()"
+
+class ContinueNode(ASTNode):
+    """Represents continue node"""
+    def __init__(self):
+        pass
+    
+    def __repr__(self):
+        return "ContinueNode()"

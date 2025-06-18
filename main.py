@@ -5,19 +5,27 @@ from interpreter import Interpreter
 
 if __name__ == "__main__":
     program =  '''
-        i = 0
-        while (i < 5) {
-            print("While loop:", i)
-            i = i + 1
+    for (i in range(10)) {
+        if (i == 3) {
+            continue
         }
+        if (i == 7) {
+            break
+        }
+        print("Number:", i)
+    }
 
-        for (x in range(3)) {
-            print("For loop:", x)
+    j = 0
+    while (j < 10) {
+        j = j + 1
+        if (j == 5) {
+            continue
         }
-
-        for (char in "hello") {
-            print("Character:", char)
+        if (j == 8) {
+            break
         }
+        print("While:", j)
+    }
     '''
     
     #same interpreter for all statements because of how memory is handled``

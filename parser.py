@@ -133,6 +133,13 @@ class Parser:
             return self.parse_while()
         elif self.current_token.type == TokenType.FOR:
             return self.parse_for()
+        elif self.current_token.type == TokenType.BREAK:
+            self.eat(TokenType.BREAK)
+            return BreakNode()
+        elif self.current_token.type == TokenType.CONTINUE:
+            self.eat(TokenType.CONTINUE)
+            return ContinueNode()
+
 
 
         if self.current_token.type == TokenType.IDENTIFIER:

@@ -1,4 +1,5 @@
 from bim_token import TokenType
+from exceptions import *
 
 #executes the created AST
 class Interpreter:
@@ -74,11 +75,16 @@ class Interpreter:
         return None
         
     def visit_BlockNode(self, node):
-        """execute contents of block"""
+        """Execute block with break/continue propagation"""
         result = None
         for statement in node.statements:
-            result = self.visit(statement)
+            try:
+                result = self.visit(statement)
+            except (BreakException, ContinueException):
+                # raise break/continue so that the loop handler can catch it
+                raise
         return result
+
     
     def is_truthy(self, value):
         """Determine if a condition is true"""
@@ -148,21 +154,34 @@ class Interpreter:
         return value 
     
     def visit_WhileNode(self, node):
-        """Execute while loop"""
+        """Execute while loop with break/continue support"""
         result = None
-        while True:
-            condition_value = self.visit(node.condition)
-            if not self.is_truthy(condition_value):
-                break
-            result = self.visit(node.body)
+        try:
+            while True:
+                condition_value = self.visit(node.condition)
+                if not self.is_truthy(condition_value):
+                    break
+                
+                try:
+                    result = self.visit(node.body)
+                except ContinueException:
+                    continue
+                except BreakException:
+                    break
+                    
+        except BreakException:
+            pass
+        
         return result
 
+
     def visit_ForNode(self, node):
-        """Execute for loop"""
+        """Execute for loop with break/continue support"""
         result = None
         
         iterable_value = self.visit(node.iterable)
         
+        # Handle different types of iterables
         if isinstance(iterable_value, list):
             items = iterable_value
         elif isinstance(iterable_value, str):
@@ -172,13 +191,22 @@ class Interpreter:
         else:
             raise Exception(f"Cannot iterate over {type(iterable_value)}")
         
-        # Save the old value of the loop variable (if it exists)
+        # Save the old value of the loop variable
         old_value = self.variables.get(node.variable)
         
         try:
             for item in items:
                 self.variables[node.variable] = item
-                result = self.visit(node.body)
+                
+                try:
+                    result = self.visit(node.body)
+                except ContinueException:
+                    continue
+                except BreakException:
+                    break
+                    
+        except BreakException:
+            pass
         finally:
             # Restore the old value of the loop variable
             if old_value is not None:
@@ -187,6 +215,16 @@ class Interpreter:
                 del self.variables[node.variable]
         
         return result
+
+    
+    def visit_BreakNode(self, node):
+        """Handle break statement by raising an exception"""
+        raise BreakException()
+
+    def visit_ContinueNode(self, node):
+        """Handle continue statement by raising an exception"""
+        raise ContinueException()
+
 
     def visit_RangeNode(self, node):
         """Create a range object"""
