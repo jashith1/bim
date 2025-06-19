@@ -146,7 +146,7 @@ class Parser:
             return ContinueNode()
 
         #variable assignments
-        if self.current_token.type == TokenType.IDENTIFIER:            
+        elif self.current_token.type == TokenType.IDENTIFIER:            
             # Parse the left side (could be variable or array access)
             left_expr = self.expression()
             
@@ -164,6 +164,12 @@ class Parser:
             else:
                 # Not an assignment, return the expression
                 return left_expr
+        
+        #functions
+        elif self.current_token.type == TokenType.FUNCTION:
+            return self.parse_function_def()
+        elif self.current_token.type == TokenType.RETURN:
+            return self.parse_return()
 
         
         # Parse as expression
@@ -341,3 +347,50 @@ class Parser:
                 break
         
         return base_expr
+
+    def parse_function_def(self):
+        """Parse function definition"""
+        self.eat(TokenType.FUNCTION)
+        
+        if self.current_token.type != TokenType.IDENTIFIER:
+            raise Exception("Expected function name")
+        
+        function_name = self.current_token.value
+        self.eat(TokenType.IDENTIFIER)
+        
+        # Parse parameters
+        self.eat(TokenType.LPAREN)
+        parameters = []
+        
+        if self.current_token.type != TokenType.RPAREN:
+            # first parameter
+            if self.current_token.type != TokenType.IDENTIFIER:
+                raise Exception("Expected parameter name")
+            parameters.append(self.current_token.value)
+            self.eat(TokenType.IDENTIFIER)
+            
+            # remaining parameters
+            while self.current_token.type == TokenType.COMMA:
+                self.eat(TokenType.COMMA)
+                if self.current_token.type != TokenType.IDENTIFIER:
+                    raise Exception("Expected parameter name")
+                parameters.append(self.current_token.value)
+                self.eat(TokenType.IDENTIFIER)
+        
+        self.eat(TokenType.RPAREN)
+        
+        # Parse function body
+        self.skip_newlines()
+        body = self.parse_block()
+        
+        return FunctionDefNode(function_name, parameters, body)
+
+    def parse_return(self):
+        """Parse return statement"""
+        self.eat(TokenType.RETURN)
+        
+        if self.current_token.type in (TokenType.NEWLINE, TokenType.SEMICOLON, TokenType.RBRACE, TokenType.EOF):
+            return ReturnNode(None)
+        else:
+            value = self.expression()
+            return ReturnNode(value)

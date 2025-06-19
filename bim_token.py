@@ -47,3 +47,5 @@ class TokenType(Enum):
     LBRACKET = "LBRACKET"
     RBRACKET = "RBRACKET"
     DOT = "DOT" #for dot methods (like array.push)
+    FUNCTION = "FUNCTION" 
+    RETURN = "RETURN"

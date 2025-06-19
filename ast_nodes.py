@@ -175,3 +175,21 @@ class MethodCallNode(ASTNode):
     
     def __repr__(self):
         return f"MethodCallNode(object={self.object_expr}, method={self.method_name}, args={self.arguments})"
+    
+class FunctionDefNode(ASTNode):
+    """Represents function definitions"""
+    def __init__(self, name, parameters, body):
+        self.name = name
+        self.parameters = parameters
+        self.body = body
+    
+    def __repr__(self):
+        return f"FunctionDefNode(name={self.name}, params={self.parameters}, body={self.body})"
+
+class ReturnNode(ASTNode):
+    """Represents return statements"""
+    def __init__(self, value=None):
+        self.value = value
+    
+    def __repr__(self):
+        return f"ReturnNode(value={self.value})"

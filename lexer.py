@@ -154,6 +154,10 @@ class Lexer:
                     return Token(TokenType.BREAK, 'break')
                 elif identifier == 'continue':
                     return Token(TokenType.CONTINUE, 'continue')
+                elif identifier == 'function':
+                    return Token(TokenType.FUNCTION, 'func')
+                elif identifier == 'return':
+                    return Token(TokenType.RETURN, 'return')
 
                 return Token(TokenType.IDENTIFIER, identifier)
             

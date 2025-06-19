@@ -1,28 +1,33 @@
-#TO-DO: user defined functions
 from lexer import Lexer
 from parser import Parser
 from interpreter import Interpreter
 
 if __name__ == "__main__":
-    program =  '''
-        numbers = [1, 2, 3, 4, 5]
-
-        print("First number:", numbers[0])
-
-        numbers[1] = 99
-        print("Modified array:", numbers)
-
-        numbers.push(6)
-        print("After push:", numbers)
-
-        last = numbers.pop()
-        print("Popped:", last)
-        print("After pop:", numbers)
-        print("Array length:", numbers.length())
-
-        for (num in numbers) {
-            print("number:", num)
+    program = '''
+        function add(a, b) {
+            return a + b
         }
+        
+        function greet(name) {
+            print("Hello", name)
+            return "greeting sent"
+        }
+        
+        function factorial(n) {
+            if (n <= 1) {
+                return 1
+            }
+            return n * factorial(n - 1)
+        }
+        
+        result = add(5, 3)
+        print("5 + 3 =", result)
+        
+        msg = greet("bruh")
+        print("Function returned:", msg)
+        
+        fact = factorial(5)
+        print("5! =", fact)
     '''
     
     #same interpreter for all statements because of how memory is handled``

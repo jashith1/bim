@@ -6,6 +6,7 @@ class Interpreter:
     def __init__(self):
         #stored variables
         self.variables = {} 
+        self.user_functions = {}
         self.builtin_functions = {
             'print': self._builtin_print,
             'abs': self._builtin_abs,
@@ -236,17 +237,7 @@ class Interpreter:
             return range(int(start_val), int(stop_val), int(step_val))
         else:
             return range(int(start_val), int(stop_val))
-
-    def visit_FunctionCallNode(self, node):
-        """execute the function call with given args"""
-        function_name = node.function_name
-        
-        if function_name in self.builtin_functions:
-            arg_values = [self.visit(arg) for arg in node.arguments]
-            return self.builtin_functions[function_name](arg_values)
-        else:
-            raise Exception(f"Unknown function: {function_name}")
-        
+ 
     def visit_ArrayNode(self, node):
         """Create an array"""
         elements = []
@@ -304,7 +295,65 @@ class Interpreter:
             return self._handle_string_method(object_value, method_name, arg_values)
         else:
             raise Exception(f"Object of type {type(object_value).__name__} has no methods")
+        
+    def visit_FunctionDefNode(self, node):
+        """Define a user function"""
+        self.user_functions[node.name] = {
+            'parameters': node.parameters,
+            'body': node.body
+        }
+        return None
 
+    def visit_ReturnNode(self, node):
+        """Handle return statement"""
+        if node.value:
+            value = self.visit(node.value)
+        else:
+            value = None
+        raise ReturnException(value)
+
+    def visit_FunctionCallNode(self, node):
+        """call functions"""
+        function_name = node.function_name
+        
+        if function_name in self.user_functions:
+            return self._call_user_function(function_name, node.arguments)
+        elif function_name in self.builtin_functions:
+            arg_values = [self.visit(arg) for arg in node.arguments]
+            return self.builtin_functions[function_name](arg_values)
+        else:
+            raise Exception(f"Unknown function: {function_name}")
+
+    def _call_user_function(self, function_name, arguments):
+        """Call a user-defined function"""
+        func_info = self.user_functions[function_name]
+        parameters = func_info['parameters']
+        body = func_info['body']
+        
+        if len(arguments) != len(parameters):
+            raise Exception(f"Function '{function_name}' expects {len(parameters)} arguments, got {len(arguments)}")
+        
+        arg_values = [self.visit(arg) for arg in arguments]
+        
+        # Save current variable state
+        old_variables = self.variables.copy()
+        
+        # Set up parameters as local variables
+        for param, value in zip(parameters, arg_values):
+            self.variables[param] = value
+        
+        try:
+            # Execute function body
+            self.visit(body)
+            # If no return statement, return None
+            result = None
+        except ReturnException as e:
+            result = e.value
+        finally:
+            # Restore variable state
+            self.variables = old_variables
+        
+        return result
 
     def _builtin_print(self, args):
         """prints all arguments separated by spaces"""
