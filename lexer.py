@@ -204,9 +204,22 @@ class Lexer:
                 self.advance()
                 return Token(TokenType.RBRACE, '}')
             
-            elif self.current_char == ';':
+            if self.current_char == ';':
                 #; is treated as end of line
                 return Token(TokenType.EOF, "")
+            
+            if self.current_char == '[':
+                self.advance()
+                return Token(TokenType.LBRACKET, '[')
+            
+            if self.current_char == ']':
+                self.advance()
+                return Token(TokenType.RBRACKET, ']')
+            
+            if self.current_char == '.':
+                self.advance()
+                return Token(TokenType.DOT, '.')
+
         
         # when at end return EOF
         return Token(TokenType.EOF, "")

@@ -246,6 +246,65 @@ class Interpreter:
             return self.builtin_functions[function_name](arg_values)
         else:
             raise Exception(f"Unknown function: {function_name}")
+        
+    def visit_ArrayNode(self, node):
+        """Create an array"""
+        elements = []
+        for element_expr in node.elements:
+            elements.append(self.visit(element_expr))
+        return elements
+
+    def visit_IndexNode(self, node):
+        """Get element from array by index"""
+        array_value = self.visit(node.array)
+        index_value = self.visit(node.index)
+        
+        if not isinstance(array_value, (list, str)):
+            raise Exception(f"Cannot index {type(array_value).__name__}")
+        
+        if not isinstance(index_value, (int, float)):
+            raise Exception("Array index must be a number")
+        
+        index = int(index_value)
+        
+        try:
+            return array_value[index]
+        except IndexError:
+            raise Exception(f"Array index {index} out of range")
+
+    def visit_IndexAssignmentNode(self, node):
+        """Assign value to array element"""
+        array_value = self.visit(node.array)
+        index_value = self.visit(node.index)
+        new_value = self.visit(node.value)
+        
+        if not isinstance(array_value, list):
+            raise Exception(f"Cannot assign to index of {type(array_value).__name__}")
+        
+        if not isinstance(index_value, (int, float)):
+            raise Exception("Array index must be a number")
+        
+        index = int(index_value)
+        
+        try:
+            array_value[index] = new_value
+            return new_value
+        except IndexError:
+            raise Exception(f"Array index {index} out of range")
+
+    def visit_MethodCallNode(self, node):
+        """Handle method calls on objects"""
+        object_value = self.visit(node.object_expr)
+        method_name = node.method_name
+        arg_values = [self.visit(arg) for arg in node.arguments]
+        
+        if isinstance(object_value, list):
+            return self._handle_array_method(object_value, method_name, arg_values)
+        elif isinstance(object_value, str):
+            return self._handle_string_method(object_value, method_name, arg_values)
+        else:
+            raise Exception(f"Object of type {type(object_value).__name__} has no methods")
+
 
     def _builtin_print(self, args):
         """prints all arguments separated by spaces"""
@@ -308,3 +367,74 @@ class Interpreter:
             return range(int(args[0]), int(args[1]), int(args[2]))
         else:
             raise Exception("range() takes 1 to 3 arguments")
+        
+    def _handle_array_method(self, array, method_name, args):
+        """Handle array methods"""
+        if method_name == "push":
+            for arg in args:
+                array.append(arg)
+            return len(array)
+        
+        elif method_name == "pop":
+            if len(args) != 0:
+                raise Exception("pop() takes no arguments")
+            if len(array) == 0:
+                raise Exception("Cannot pop from empty array")
+            return array.pop()
+        
+        elif method_name == "length":
+            if len(args) != 0:
+                raise Exception("length takes no arguments")
+            return len(array)
+        
+        elif method_name == "insert":
+            # Insert element at specific index
+            if len(args) != 2:
+                raise Exception("insert() takes exactly 2 arguments (index, value)")
+            index, value = args
+            if not isinstance(index, (int, float)):
+                raise Exception("Insert index must be a number")
+            array.insert(int(index), value)
+            return None
+        
+        elif method_name == "remove":
+            # Remove element at specific index
+            if len(args) != 1:
+                raise Exception("remove() takes exactly 1 argument (index)")
+            index = args[0]
+            if not isinstance(index, (int, float)):
+                raise Exception("Remove index must be a number")
+            try:
+                return array.pop(int(index))
+            except IndexError:
+                raise Exception(f"Array index {int(index)} out of range")
+        
+        else:
+            raise Exception(f"Array has no method '{method_name}'")
+
+    def _handle_string_method(self, string, method_name, args):
+        """Handle string methods"""
+        if method_name == "length":
+            if len(args) != 0:
+                raise Exception("length takes no arguments")
+            return len(string)
+        
+        elif method_name == "charAt":
+            if len(args) != 1:
+                raise Exception("charAt() takes exactly 1 argument")
+            index = args[0]
+            if not isinstance(index, (int, float)):
+                raise Exception("charAt index must be a number")
+            try:
+                return string[int(index)]
+            except IndexError:
+                raise Exception(f"String index {int(index)} out of range")
+                
+        else:
+            # Fall back to existing string methods
+            if method_name == "upper":
+                return string.upper()
+            elif method_name == "lower":
+                return string.lower()
+            else:
+                raise Exception(f"String has no method '{method_name}'")

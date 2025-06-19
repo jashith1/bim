@@ -33,42 +33,45 @@ class Parser:
 
         elif token.type == TokenType.NUMBER:
             self.eat(TokenType.NUMBER)
-            return NumberNode(float(token.value))
-        
+            return self.parse_postfix(NumberNode(float(token.value)))
+    
         elif token.type == TokenType.STRING:
             self.eat(TokenType.STRING)
-            return StringNode(token.value)
+            return self.parse_postfix(StringNode(token.value))
         
         elif token.type == TokenType.TRUE:
             self.eat(TokenType.TRUE)
-            return BooleanNode(True)
+            return self.parse_postfix(BooleanNode(True))
         
         elif token.type == TokenType.FALSE:
             self.eat(TokenType.FALSE)
-            return BooleanNode(False)
+            return self.parse_postfix(BooleanNode(False))
+        
+        elif token.type == TokenType.LBRACKET:
+            # Array literal
+            return self.parse_postfix(self.parse_array())
         
         elif token.type == TokenType.IDENTIFIER:
             function_name = token.value
             self.eat(TokenType.IDENTIFIER)
             
             if self.current_token.type == TokenType.LPAREN:
-                #function call
+                # Function call
                 self.eat(TokenType.LPAREN)
                 arguments = self.parse_arguments()
                 self.eat(TokenType.RPAREN)
-                return FunctionCallNode(function_name, arguments)
+                return self.parse_postfix(FunctionCallNode(function_name, arguments))
             else:
-                #just a variable
-                return VariableNode(function_name)
+                # Variable
+                return self.parse_postfix(VariableNode(function_name))
         
         elif token.type == TokenType.LPAREN:
             self.eat(TokenType.LPAREN)
-            node = self.expression() 
-            self.eat(TokenType.RPAREN) 
-            return node
-
-        
-        raise Exception(f"Unexpected token: {token.type}")
+            node = self.expression()
+            self.eat(TokenType.RPAREN)
+            return self.parse_postfix(node)
+            
+            raise Exception(f"Unexpected token: {token.type}")
     
     def term(self):
         """parse and return AST for multiplication and division (medium-high priority in PEMDAS)"""
@@ -127,6 +130,8 @@ class Parser:
     def statement(self):
         """Parse a statement (ie assignment or expression)"""
         self.skip_newlines()
+
+        #control flow statements
         if self.current_token.type == TokenType.IF:
             return self.parse_if()
         elif self.current_token.type == TokenType.WHILE:
@@ -140,25 +145,26 @@ class Parser:
             self.eat(TokenType.CONTINUE)
             return ContinueNode()
 
-
-
-        if self.current_token.type == TokenType.IDENTIFIER:
-            #temporarily store the data
-            saved_lexer_pos = self.lexer.pos
-            saved_lexer_char = self.lexer.current_char
-            var_name = self.current_token.value
-            
-            self.eat(TokenType.IDENTIFIER)
+        #variable assignments
+        if self.current_token.type == TokenType.IDENTIFIER:            
+            # Parse the left side (could be variable or array access)
+            left_expr = self.expression()
             
             if self.current_token.type == TokenType.ASSIGN:
                 self.eat(TokenType.ASSIGN)
                 value = self.expression()
-                return AssignmentNode(var_name, value)
+                
+                # Check if left side is a simple variable or array index
+                if isinstance(left_expr, VariableNode):
+                    return AssignmentNode(left_expr.name, value)
+                elif isinstance(left_expr, IndexNode):
+                    return IndexAssignmentNode(left_expr.array, left_expr.index, value)
+                else:
+                    raise Exception("Invalid left-hand side in assignment")
             else:
-                # Not an assignment, restore state and parse as expression
-                self.lexer.pos = saved_lexer_pos
-                self.lexer.current_char = saved_lexer_char
-                self.current_token = Token(TokenType.IDENTIFIER, var_name)
+                # Not an assignment, return the expression
+                return left_expr
+
         
         # Parse as expression
         return self.expression()
@@ -280,3 +286,58 @@ class Parser:
         
         return BlockNode(statements)
 
+    def parse_array(self):
+        """Parse array literal"""
+        self.eat(TokenType.LBRACKET)
+        
+        elements = []
+        
+        # empty array
+        if self.current_token.type == TokenType.RBRACKET:
+            self.eat(TokenType.RBRACKET)
+            return ArrayNode(elements)
+        
+        # Parse first element
+        elements.append(self.expression())
+        
+        # Parse remaining elements
+        while self.current_token.type == TokenType.COMMA:
+            self.eat(TokenType.COMMA)
+            elements.append(self.expression())
+        
+        self.eat(TokenType.RBRACKET)
+        return ArrayNode(elements)
+
+    def parse_postfix(self, base_expr):
+        """Parse postfix operations like indexing [0] and method calls .method()"""
+        while True:
+            if self.current_token.type == TokenType.LBRACKET:
+                # Array indexing (arr[index])
+                self.eat(TokenType.LBRACKET)
+                index = self.expression()
+                self.eat(TokenType.RBRACKET)
+                base_expr = IndexNode(base_expr, index)
+            
+            elif self.current_token.type == TokenType.DOT:
+                # Method call (arr.method(args))
+                self.eat(TokenType.DOT)
+                
+                if self.current_token.type != TokenType.IDENTIFIER:
+                    raise Exception("Expected method name after '.'")
+                
+                method_name = self.current_token.value
+                self.eat(TokenType.IDENTIFIER)
+                
+                if self.current_token.type == TokenType.LPAREN:
+                    # Method call with parentheses
+                    self.eat(TokenType.LPAREN)
+                    arguments = self.parse_arguments()
+                    self.eat(TokenType.RPAREN)
+                    base_expr = MethodCallNode(base_expr, method_name, arguments)
+                else:
+                    # access (treat as method call with no args)
+                    base_expr = MethodCallNode(base_expr, method_name, [])
+            else:
+                break
+        
+        return base_expr

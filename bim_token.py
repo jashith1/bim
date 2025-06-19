@@ -44,3 +44,6 @@ class TokenType(Enum):
     IN = "IN" # ex: "for x in range(10)"
     BREAK = "BREAK"
     CONTINUE = "CONTINUE"
+    LBRACKET = "LBRACKET"
+    RBRACKET = "RBRACKET"
+    DOT = "DOT" #for dot methods (like array.push)

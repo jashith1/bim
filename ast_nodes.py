@@ -138,3 +138,40 @@ class ContinueNode(ASTNode):
     
     def __repr__(self):
         return "ContinueNode()"
+    
+class ArrayNode(ASTNode):
+    """Represents arrays"""
+    def __init__(self, elements):
+        self.elements = elements
+    
+    def __repr__(self):
+        return f"ArrayNode({self.elements})"
+
+class IndexNode(ASTNode):
+    """Represents index node"""
+    def __init__(self, array, index):
+        self.array = array
+        self.index = index
+    
+    def __repr__(self):
+        return f"IndexNode(array={self.array}, index={self.index})"
+
+class IndexAssignmentNode(ASTNode):
+    """Node for index assignments"""
+    def __init__(self, array, index, value):
+        self.array = array
+        self.index = index
+        self.value = value
+    
+    def __repr__(self):
+        return f"IndexAssignmentNode(array={self.array}, index={self.index}, value={self.value})"
+
+class MethodCallNode(ASTNode):
+    """Node representing method calls"""
+    def __init__(self, object_expr, method_name, arguments):
+        self.object_expr = object_expr
+        self.method_name = method_name
+        self.arguments = arguments
+    
+    def __repr__(self):
+        return f"MethodCallNode(object={self.object_expr}, method={self.method_name}, args={self.arguments})"
