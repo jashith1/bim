@@ -1,5 +1,5 @@
-from bim_token import TokenType
-from exceptions import *
+from bim.bim_token import TokenType
+from bim.exceptions import *
 
 #executes the created AST
 class Interpreter:

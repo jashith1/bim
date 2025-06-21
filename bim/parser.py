@@ -1,5 +1,5 @@
-from bim_token import *
-from ast_nodes import *
+from bim.bim_token import *
+from bim.ast_nodes import *
 
 class Parser:
     def __init__(self, lexer):
